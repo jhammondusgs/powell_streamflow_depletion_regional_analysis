@@ -7,19 +7,27 @@
 ################################################################################### Powell Streamflw Depletion Workshop
 ################################################################################### 9/19/2022
 
+library(googledrive)
 library(dplyr)
 library(lubridate)
 library(dataRetrieval)
 library(stringr)
+# just for doing things old school without creating an R project. Change this to the location you'd like to work in.
+base_wd <- "/Users/johnhammond/powell_streamflow_depletion_regional_analysis/"
+setwd(base_wd)
+# access files from google drive
+my_url <- "https://drive.google.com/drive/folders/1GS31PaawF0AGGuGnwQ3ThpFSkOd85-XZ"
+x <- drive_ls(as_id(my_url))
+y <- drive_ls(x$id[1]) # basic information folder on google drive
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis")
-
-lowflowsites <- read.csv("GagesII_CA_MI_KS_072722.csv", stringsAsFactors = FALSE )
+drive_download(y$id[1]) # download "GagesII_CA_MI_KS_072722.csv", file will be stored to the directory you are working in
+lowflowsites <- read.csv("GagesII_CA_MI_KS_072722.csv")
 lowflowsiteids <- str_pad(lowflowsites$site_id_num,8, side = "left", pad = "0")
 
 # there are 165 unique sites from this list
-
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_data")
+# create "streamflow_data" directory and set this directory
+dir.create(paste0(base_wd, "streamflow_data"))
+setwd(paste0(base_wd, "streamflow_data"))
 
 for(i in seq_along(lowflowsiteids)){
   # i = 1
@@ -46,8 +54,8 @@ library(foreign)
 library(tidyverse)
 library(dataRetrieval)
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_data")
-
+dir.create(paste0(base_wd, "streamflow_metrics"))
+setwd(paste0(base_wd, "streamflow_data"))
 usgs.files <- list.files(pattern = ".csv")
 
 ###########################################################33
@@ -55,7 +63,7 @@ for(i in seq_along(usgs.files)){
   
   # i = 42
   # for testing offline: currentareaSqKm = 100
-  setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_data")
+  setwd(paste0(base_wd, "streamflow_data"))
   
   current <- read.csv(usgs.files[i], stringsAsFactors = FALSE)
   currentsite <- gsub(".csv","",usgs.files[i])
@@ -340,13 +348,20 @@ for(i in seq_along(usgs.files)){
  try(allseasonaloutput$gage <- currentsite)
   
 
-  setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_metrics")
+  setwd(paste0(base_wd, "streamflow_metrics"))
   
   try(write.csv(allannualoutput, paste0("annual_metrics_",usgs.files[i])))
   try(write.csv(allseasonaloutput, paste0("seasonal_metrics_",usgs.files[i])))
   
 }
 
+
+
+
+
+
+
+# code below not updated to run for any user using github and google drive yet
 
 
 ####################################
@@ -360,105 +375,105 @@ for(i in seq_along(usgs.files)){
 # do this one streamflow metric file at a time and get antecedent climate for different periods
 
  
-library(data.table)
-library(dplyr)
-library(tidyr)
-library(lubridate)
-library(SPEI)
-
-setwd("C:\\Users\\jhammond\\Desktop\\Rebekah_Manning\\MWBM_data")
-
-pet <- fread("MWBM_PET_mm_all_CONUS_gages2_climgrid.csv")
-p <- fread("MWBM_PRCP_mm_all_CONUS_gages2_climgrid.csv")
-tmean <- fread("MWBM_Tmean_C_all_CONUS_gages2_climgrid.csv")
-
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_metrics")
-
-usgs.files <- list.files(pattern = "annual_metrics")
-
-for(i in seq_along(usgs.files)){
-  # i = 1
-  setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_metrics")
-  
-  current <- read.csv(usgs.files[i], stringsAsFactors = FALSE)
-  usgssite <- unique(as.character(current$gage))
-  
-  p_sub <- p %>% select(usgssite, date)
-  pet_sub <- pet %>% select(usgssite)
-  tmean_sub <- tmean %>% select(usgssite)
-  
-  climate <- cbind(p_sub, pet_sub, tmean_sub)
-  climate <- climate[,c(2,1,3,4)]
-  colnames(climate) <- c("Date","p_mm","pet_mm","tmean_c")
-  climate$year <- year(climate$Date)
-  climate$month <- month(climate$Date)
-  climate$wateryear <- ifelse(climate$month>9, climate$year+1,climate$year)
-  
-  # calculate SPEI
-  
-  climate$P_minus_PET <- climate$p_mm - climate$pet_mm
-  climate$P_minus_PET <- ifelse(is.na(climate$P_minus_PET),0,climate$P_minus_PET) # should not be any missing data, but if there is, need to feed function values in order to run
-  spei6month <- spei(climate[,'P_minus_PET'], 6) # antecedent 6 months
-  spei12month <- spei(climate[,'P_minus_PET'], 12) # antecedent 6 months
-  spei60month <- spei(climate[,'P_minus_PET'], 60) # antecedent 6 months
-  climate$spei6month <- spei6month$fitted
-  climate$spei12month <- spei12month$fitted # 1 year
-  climate$spei60month <- spei60month$fitted # 5 years
-  
-  setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_metrics_with_climate")
-  
-  # aggregate climate to several antecedent periods
-october_to_march_climate <- subset(climate, climate$month > 9 | climate$month < 4)
-october_to_march_climate <- october_to_march_climate %>% group_by(wateryear) %>% summarise(octmar_p_mm <- sum(p_mm, na.rm = TRUE),
-                                                                                             octmar_pet_mm <- sum(pet_mm, na.rm = TRUE),
-                                                                                             octmar_tmean_c <- mean(tmean_c, na.rm = TRUE),
-                                                                                             octmar_spei_6m <- mean(spei6month, na.rm = TRUE),
-                                                                                             octmar_spei_1y <- mean(spei12month, na.rm = TRUE),
-                                                                                             octmar_spei_5y <- mean(spei60month, na.rm = TRUE))
-
-october_to_june_climate <- subset(climate, climate$month > 9 | climate$month < 7)
-october_to_june_climate <- october_to_june_climate %>% group_by(wateryear) %>% summarise(octjun_p_mm <- sum(p_mm, na.rm = TRUE),
-                                                                                           octjun_pet_mm <- sum(pet_mm, na.rm = TRUE),
-                                                                                           octjun_tmean_c <- mean(tmean_c, na.rm = TRUE),
-                                                                                           octjun_spei_6m <- mean(spei6month, na.rm = TRUE),
-                                                                                           octjun_spei_1y <- mean(spei12month, na.rm = TRUE),
-                                                                                           octjun_spei_5y <- mean(spei60month, na.rm = TRUE))
-
-water_year_climate <- climate %>% group_by(wateryear) %>% summarise(wy_p_mm <- sum(p_mm, na.rm = TRUE),
-                                                                                    wy_pet_mm <- sum(pet_mm, na.rm = TRUE),
-                                                                                    wy_tmean_c <- mean(tmean_c, na.rm = TRUE),
-                                                                                    wy_spei_6m <- mean(spei6month, na.rm = TRUE),
-                                                                                    wy_spei_1y <- mean(spei12month, na.rm = TRUE),
-                                                                                    wy_spei_5y <- mean(spei60month, na.rm = TRUE))
-  
-july_to_september_climate <- subset(climate, climate$month > 6 & climate$month < 10)
-july_to_september_climate <- july_to_september_climate %>% group_by(wateryear) %>% summarise(julsep_p_mm <- sum(p_mm, na.rm = TRUE),
-                                                                                         julsep_pet_mm <- sum(pet_mm, na.rm = TRUE),
-                                                                                         julsep_tmean_c <- mean(tmean_c, na.rm = TRUE),
-                                                                                         julsep_spei_6m <- mean(spei6month, na.rm = TRUE),
-                                                                                         julsep_spei_1y <- mean(spei12month, na.rm = TRUE),
-                                                                                         julsep_spei_5y <- mean(spei60month, na.rm = TRUE))
-  # merge with streamflow metrics
-  
-current_with_climate <- merge(current, water_year_climate, by = "wateryear")
-current_with_climate <- merge(current_with_climate, october_to_march_climate, by = "wateryear")
-current_with_climate <- merge(current_with_climate, october_to_june_climate, by = "wateryear")
-current_with_climate <- merge(current_with_climate, july_to_september_climate, by = "wateryear")
-
-colnames(current_with_climate)[19:42] <- c("wy_p_mm"               , "wy_pet_mm" ,          
-                                           "wy_tmean_c"        , "wy_spei_6m"     ,
-                                           "wy_spei_1y"    , "wy_spei_5y"    ,
-                                           "octmar_p_mm"           , "octmar_pet_mm",       
-                                           "octmar_tmean_c"    , "octmar_spei_6m" ,
-                                           "octmar_spei_1y", "octmar_spei_5y",
-                                           "octjun_p_mm"           , "octjun_pet_mm",       
-                                           "octjun_tmean_c"    , "octjun_spei_6m" ,
-                                           "octjun_spei_1y", "octjun_spei_5y",
-                                           "julsep_p_mm"           , "julsep_pet_mm",       
-                                           "julsep_tmean_c"    , "julsep_spei_6m" ,
-                                           "julsep_spei_1y", "julsep_spei_5y")
-# write output to new folder
-  write.csv( current_with_climate , paste0(usgs.files[i],"_with_climate.csv"))
-  
-}
-
+# library(data.table)
+# library(dplyr)
+# library(tidyr)
+# library(lubridate)
+# library(SPEI)
+# 
+# setwd("C:\\Users\\jhammond\\Desktop\\Rebekah_Manning\\MWBM_data")
+# 
+# pet <- fread("MWBM_PET_mm_all_CONUS_gages2_climgrid.csv")
+# p <- fread("MWBM_PRCP_mm_all_CONUS_gages2_climgrid.csv")
+# tmean <- fread("MWBM_Tmean_C_all_CONUS_gages2_climgrid.csv")
+# 
+# setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_metrics")
+# 
+# usgs.files <- list.files(pattern = "annual_metrics")
+# 
+# for(i in seq_along(usgs.files)){
+#   # i = 1
+#   setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_metrics")
+#   
+#   current <- read.csv(usgs.files[i], stringsAsFactors = FALSE)
+#   usgssite <- unique(as.character(current$gage))
+#   
+#   p_sub <- p %>% select(usgssite, date)
+#   pet_sub <- pet %>% select(usgssite)
+#   tmean_sub <- tmean %>% select(usgssite)
+#   
+#   climate <- cbind(p_sub, pet_sub, tmean_sub)
+#   climate <- climate[,c(2,1,3,4)]
+#   colnames(climate) <- c("Date","p_mm","pet_mm","tmean_c")
+#   climate$year <- year(climate$Date)
+#   climate$month <- month(climate$Date)
+#   climate$wateryear <- ifelse(climate$month>9, climate$year+1,climate$year)
+#   
+#   # calculate SPEI
+#   
+#   climate$P_minus_PET <- climate$p_mm - climate$pet_mm
+#   climate$P_minus_PET <- ifelse(is.na(climate$P_minus_PET),0,climate$P_minus_PET) # should not be any missing data, but if there is, need to feed function values in order to run
+#   spei6month <- spei(climate[,'P_minus_PET'], 6) # antecedent 6 months
+#   spei12month <- spei(climate[,'P_minus_PET'], 12) # antecedent 6 months
+#   spei60month <- spei(climate[,'P_minus_PET'], 60) # antecedent 6 months
+#   climate$spei6month <- spei6month$fitted
+#   climate$spei12month <- spei12month$fitted # 1 year
+#   climate$spei60month <- spei60month$fitted # 5 years
+#   
+#   setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_metrics_with_climate")
+#   
+#   # aggregate climate to several antecedent periods
+# october_to_march_climate <- subset(climate, climate$month > 9 | climate$month < 4)
+# october_to_march_climate <- october_to_march_climate %>% group_by(wateryear) %>% summarise(octmar_p_mm <- sum(p_mm, na.rm = TRUE),
+#                                                                                              octmar_pet_mm <- sum(pet_mm, na.rm = TRUE),
+#                                                                                              octmar_tmean_c <- mean(tmean_c, na.rm = TRUE),
+#                                                                                              octmar_spei_6m <- mean(spei6month, na.rm = TRUE),
+#                                                                                              octmar_spei_1y <- mean(spei12month, na.rm = TRUE),
+#                                                                                              octmar_spei_5y <- mean(spei60month, na.rm = TRUE))
+# 
+# october_to_june_climate <- subset(climate, climate$month > 9 | climate$month < 7)
+# october_to_june_climate <- october_to_june_climate %>% group_by(wateryear) %>% summarise(octjun_p_mm <- sum(p_mm, na.rm = TRUE),
+#                                                                                            octjun_pet_mm <- sum(pet_mm, na.rm = TRUE),
+#                                                                                            octjun_tmean_c <- mean(tmean_c, na.rm = TRUE),
+#                                                                                            octjun_spei_6m <- mean(spei6month, na.rm = TRUE),
+#                                                                                            octjun_spei_1y <- mean(spei12month, na.rm = TRUE),
+#                                                                                            octjun_spei_5y <- mean(spei60month, na.rm = TRUE))
+# 
+# water_year_climate <- climate %>% group_by(wateryear) %>% summarise(wy_p_mm <- sum(p_mm, na.rm = TRUE),
+#                                                                                     wy_pet_mm <- sum(pet_mm, na.rm = TRUE),
+#                                                                                     wy_tmean_c <- mean(tmean_c, na.rm = TRUE),
+#                                                                                     wy_spei_6m <- mean(spei6month, na.rm = TRUE),
+#                                                                                     wy_spei_1y <- mean(spei12month, na.rm = TRUE),
+#                                                                                     wy_spei_5y <- mean(spei60month, na.rm = TRUE))
+#   
+# july_to_september_climate <- subset(climate, climate$month > 6 & climate$month < 10)
+# july_to_september_climate <- july_to_september_climate %>% group_by(wateryear) %>% summarise(julsep_p_mm <- sum(p_mm, na.rm = TRUE),
+#                                                                                          julsep_pet_mm <- sum(pet_mm, na.rm = TRUE),
+#                                                                                          julsep_tmean_c <- mean(tmean_c, na.rm = TRUE),
+#                                                                                          julsep_spei_6m <- mean(spei6month, na.rm = TRUE),
+#                                                                                          julsep_spei_1y <- mean(spei12month, na.rm = TRUE),
+#                                                                                          julsep_spei_5y <- mean(spei60month, na.rm = TRUE))
+#   # merge with streamflow metrics
+#   
+# current_with_climate <- merge(current, water_year_climate, by = "wateryear")
+# current_with_climate <- merge(current_with_climate, october_to_march_climate, by = "wateryear")
+# current_with_climate <- merge(current_with_climate, october_to_june_climate, by = "wateryear")
+# current_with_climate <- merge(current_with_climate, july_to_september_climate, by = "wateryear")
+# 
+# colnames(current_with_climate)[19:42] <- c("wy_p_mm"               , "wy_pet_mm" ,          
+#                                            "wy_tmean_c"        , "wy_spei_6m"     ,
+#                                            "wy_spei_1y"    , "wy_spei_5y"    ,
+#                                            "octmar_p_mm"           , "octmar_pet_mm",       
+#                                            "octmar_tmean_c"    , "octmar_spei_6m" ,
+#                                            "octmar_spei_1y", "octmar_spei_5y",
+#                                            "octjun_p_mm"           , "octjun_pet_mm",       
+#                                            "octjun_tmean_c"    , "octjun_spei_6m" ,
+#                                            "octjun_spei_1y", "octjun_spei_5y",
+#                                            "julsep_p_mm"           , "julsep_pet_mm",       
+#                                            "julsep_tmean_c"    , "julsep_spei_6m" ,
+#                                            "julsep_spei_1y", "julsep_spei_5y")
+# # write output to new folder
+#   write.csv( current_with_climate , paste0(usgs.files[i],"_with_climate.csv"))
+#   
+# }
+# 

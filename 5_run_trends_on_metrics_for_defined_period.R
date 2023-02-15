@@ -1,3 +1,8 @@
+
+
+# code below not updated to run for any user using github and google drive yet
+
+
 ###################################################################################
 ###################################################################################
 ###################################################################################
@@ -6,6 +11,7 @@
 ### Run trends on complete data for periods 1951-2020, 1951-2020, 1981-2020
 # Want less than 10% of years missing to include in trend analysis: 91 years record required for 1951-2020, 64 for 1951-2020, 37 for 1981-2020
 # First, trends for 1951-2020
+library(googledrive)
 library(Kendall)
 library(trend)
 library(plyr)

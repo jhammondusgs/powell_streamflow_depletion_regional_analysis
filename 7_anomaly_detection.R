@@ -14,6 +14,7 @@
 ################################################################################### 
 ################################################################################### 
 ################################################################################### 
+library(googledrive)
 library(ggplot2)
 library(dplyr)
 library(maps)
@@ -25,10 +26,19 @@ library(stringr)
 library(dataRetrieval)
 library(tidyverse)
 library(tidymodels)
+# just for doing things old school without creating an R project. Change this to the location you'd like to work in.
+base_wd <- "/Users/johnhammond/powell_streamflow_depletion_regional_analysis/"
+setwd(base_wd)
+dir.create(paste0(base_wd, "master_files"))
+setwd(paste0(base_wd, "master_files"))
+# access files from google drive
+my_url <- "https://drive.google.com/drive/folders/1GS31PaawF0AGGuGnwQ3ThpFSkOd85-XZ"
+x <- drive_ls(as_id(my_url))
+y <- drive_ls(x$id[2]) # master files folder on google drive
+for(i in 1:8){drive_download(y$id[i])} # download master files locally
 ###
 states <- map_data("state")
 base_breaks <- function(n = 10){function(x) {axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)}}
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files")
 ### read in master files 
 seasonal <- read.csv("seasonal_streamflow_metrics_10102022.csv")
 annual <- read.csv("water_year_streamflow_metrics_and_climate_data_10102022.csv")
@@ -98,7 +108,7 @@ trends1981_wide_seasonal <- merge(trends1981_wide_seasonal, gages, by = "gage", 
 ################################################################################### 
 ################################################################################### 
 # read in a file of regions
-regions <- read.csv("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\GagesII_CA_MI_KS_072722.csv")
+regions <- read.csv(paste0(base_wd,"GagesII_CA_MI_KS_072722.csv"))
 colnames(regions)[2] <- "STAID"
 # assign gages to regions. in the absence of a better classification, just using reference vs non-reference currently
 colnames(annual)[17] <- "STAID"
