@@ -44,7 +44,7 @@ swsites <- as.character(swsites)
 level = 0.1
 period_length = 100 # less than 10% missing years
 ###################### prepare geoknife ecoregion monthly data
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020")
 for(i in seq_along(swsites)){
   # i = 1
   current <- subset(sw, sw$gage == swsites[i])
@@ -52,7 +52,7 @@ for(i in seq_along(swsites)){
   current <- current[,-20]
   try(current <- subset(current, current$wateryear>1920 & current$wateryear<2021))
   # change this based on trend period ie 1950 to 2018, 1950 - 2018
-  years <- as.data.frame(1951:2020)
+  years <- as.data.frame(1921:2020)
   nathresh <- 10 # less than 10% missing years
   # rest does not need changing
   colnames(years) <- "wateryear"
@@ -191,9 +191,9 @@ for(i in seq_along(swsites)){
 ####################################################################################
 ####################################################################################
 # merge individual site trend files
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020")
-all1951 <- list.files(pattern = ".csv")
-alldata1951 <- do.call(rbind, lapply(all1951, read.csv))
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020")
+all1921 <- list.files(pattern = ".csv")
+alldata1921 <- do.call(rbind, lapply(all1921, read.csv))
 
 setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020")
 all1951 <- list.files(pattern = ".csv")
@@ -205,7 +205,7 @@ alldata1981 <- do.call(rbind, lapply(all1981, read.csv))
 
 setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files")
 
-write.csv(alldata1951, "trends_in_19512020_water_year_streamflow_metrics_and_climate_data_11102022.csv")
+write.csv(alldata1921, "trends_in_19212020_water_year_streamflow_metrics_and_climate_data_11102022.csv")
 write.csv(alldata1951, "trends_in_19512020_water_year_streamflow_metrics_and_climate_data_11102022.csv")
 write.csv(alldata1981, "trends_in_19812020_water_year_streamflow_metrics_and_climate_data_11102022.csv")
 
@@ -229,7 +229,7 @@ swsites <- as.character(swsites)
 level = 0.1
 period_length = 100 # less than 10% missing years
 ###################### prepare geoknife ecoregion monthly data
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020_seasonal")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020_seasonal")
 for(i in seq_along(swsites)){
   # i = 1
   current <- subset(sw, sw$gage == swsites[i])
@@ -237,7 +237,7 @@ for(i in seq_along(swsites)){
   current <- current[,c(-1,-2,-12)]
   try(current <- subset(current, current$wateryear>1920 & current$wateryear<2021))
   # change this based on trend period ie 1950 to 2018, 1950 - 2018
-  years <- as.data.frame(1951:2020)
+  years <- as.data.frame(1921:2020)
   nathresh <- 10 # less than 10% missing years
   # rest does not need changing
   colnames(years) <- "wateryear"
