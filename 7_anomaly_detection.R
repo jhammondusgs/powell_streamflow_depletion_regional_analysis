@@ -2,15 +2,18 @@
 ################################################################################### 
 ################################################################################### 
 # Code to experiment with anomaly detection (e.g. sites and years with streamflow that plots away from expected relationships with climate)
-# Goal: 
-#  Use anomalies from expected relationships between climate and annual or seasonal flow metrics to detect streamflow depletion
+# Goals: 
+#  1) Use anomalies from expected relationships between climate and annual or seasonal flow metrics to detect streamflow depletion
+#     1.1) look at residuals through time to identify likely streamflow depletion
+#  2) Look at trends in flow signatures vs climate signatures
 # To do:
-#  Determine method for identifying sites/years with anomalous flow vs climate values
-#  Try to keep track of false positive (site shows anomaly, but anomaly due to factor other than GW pumping) and false negative (site shows no anomaly, but impacted by pumping)
-#  Compute % of flow metric vs climate metric combinations that have anomalous values for each site and each time period. Consider focusing on annual, summer and fall streamflow metrics shown by Lapides et al to be sensitive to depletion.
-#  Consider non-linear trends
-#  Implement change point identification methods
-#  Consider rolling trend periods (eg trends for each 30 year period along record) as a way to further analyze the potential occurrence of streamflow depletion once a site is identified as having an anomaly in flow vs climate relations
+#  -Determine method for identifying sites/years with anomalous flow vs climate values using annual time series of annual or seasonal flow sigatures
+#  -Use classification based on vulnerability to keep track of false positive (site shows anomaly, but anomaly due to factor other than GW pumping) and false negative (site shows no anomaly, but impacted by pumping)
+#  -Compute % of flow metric vs climate metric combinations that have anomalous values for each site and each time period. Consider focusing on annual, summer and fall streamflow metrics shown by Lapides et al to be sensitive to depletion.
+#  Other ideas:
+#  -Implement change point identification methods
+#  -consider non-linear trends
+#  -Consider rolling trend periods (eg trends for each 30 year period along record) as a way to further analyze the potential occurrence of streamflow depletion once a site is identified as having an anomaly in flow vs climate relations
 ################################################################################### 
 ################################################################################### 
 ################################################################################### 
@@ -142,8 +145,9 @@ annual_non_impacted_KS <- subset(annual_non_impacted,  annual_non_impacted$Regio
 # fit random forest model to annual flow observations (for each flow metric separately) at non-impacted sites
 # using tidymodels code from Sam Zipper at https://www.hydroshare.org/resource/fe9d240438914634abbfdcfa03bed863/, "RandomForestTrends_03_RunModels.R" 
 
-C:\Users\jhammond\Desktop\Powell_Streamflow_Depletion_September_2022\Regional_analysis\Sam_code\ZipperEtAl_2021-ERL_IntermittencyTrends_DataCode.7z\ZipperEtAl_2021-ERL_IntermittencyTrends_DataCode.7z\ZipperEtAl_2021-ERL_IntermittencyTrends_Data+Code\code
-RandomForestTrends_03_RunModels.R
+#C:\Users\jhammond\Desktop\Powell_Streamflow_Depletion_September_2022\Regional_analysis\Sam_code\ZipperEtAl_2021-ERL_IntermittencyTrends_DataCode.7z\ZipperEtAl_2021-ERL_IntermittencyTrends_DataCode.7z\ZipperEtAl_2021-ERL_IntermittencyTrends_Data+Code\code
+#RandomForestTrends_03_RunModels.R
+
 # run explanatory variables from impacted sites through models generated above
 
 # assess whether residuals for impacted sites tend to be greater and in a different direction than those
