@@ -1,8 +1,5 @@
-
-
 # code below not updated to run for any user using github and google drive yet
-
-
+# you can manually download master files from google drive and change working directory below to rerun trends if needed
 ###################################################################################
 ###################################################################################
 ###################################################################################
@@ -35,16 +32,17 @@ library(jsonlite)
 ###################################################################################
 ###################################################################################
 ###################################################################################
+#1921-2020 first
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files")
-sw <- read.csv("water_year_streamflow_metrics_and_climate_data_10102022.csv")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files_NATIONAL")
+sw <- read.csv("water_year_streamflow_metrics_and_climate_data_NATIONAL_042123.csv")
 sw$gage <- as.character(sw$gage)
 swsites <- unique(sw$gage)
 swsites <- as.character(swsites)
 level = 0.1
 period_length = 100 # less than 10% missing years
 ###################### prepare geoknife ecoregion monthly data
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020_NATIONAL")
 for(i in seq_along(swsites)){
   # i = 1
   current <- subset(sw, sw$gage == swsites[i])
@@ -62,7 +60,7 @@ for(i in seq_along(swsites)){
   colnames(results) <- c("gage","tau","pval","slope","total_change","suitable_length")
   
   for(c in 1:39){
-        # c = 1
+    # c = 1
     currentcolumnname <- colnames(current)[c+4]
     currentcolumn <- as.data.frame(current[,c+4])
     colnames(currentcolumn) <- "variable"
@@ -88,15 +86,15 @@ for(i in seq_along(swsites)){
 ####################################################################################
 # Next, trends for 1951-2020
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files")
-sw <- read.csv("water_year_streamflow_metrics_and_climate_data_10102022.csv")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files_NATIONAL")
+sw <- read.csv("water_year_streamflow_metrics_and_climate_data_NATIONAL_042123.csv")
 sw$gage <- as.character(sw$gage)
 swsites <- unique(sw$gage)
 swsites <- as.character(swsites)
 level = 0.1
 period_length = 70 # less than 10% missing years
 ###################### prepare geoknife ecoregion monthly data
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020_NATIONAL")
 for(i in seq_along(swsites)){
   # i = 1
   current <- subset(sw, sw$gage == swsites[i])
@@ -140,15 +138,15 @@ for(i in seq_along(swsites)){
 ####################################################################################
 # Finally, trends for 1981-2020
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files")
-sw <- read.csv("water_year_streamflow_metrics_and_climate_data_10102022.csv")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files_NATIONAL")
+sw <- read.csv("water_year_streamflow_metrics_and_climate_data_NATIONAL_042123.csv")
 sw$gage <- as.character(sw$gage)
 swsites <- unique(sw$gage)
 swsites <- as.character(swsites)
 level = 0.1
 period_length = 40 # less than 10% missing years
 ###################### prepare geoknife ecoregion monthly data
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19812020")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19812020_NATIONAL")
 for(i in seq_along(swsites)){
   # i = 1
   current <- subset(sw, sw$gage == swsites[i])
@@ -191,23 +189,23 @@ for(i in seq_along(swsites)){
 ####################################################################################
 ####################################################################################
 # merge individual site trend files
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020_NATIONAL")
 all1921 <- list.files(pattern = ".csv")
 alldata1921 <- do.call(rbind, lapply(all1921, read.csv))
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020_NATIONAL")
 all1951 <- list.files(pattern = ".csv")
 alldata1951 <- do.call(rbind, lapply(all1951, read.csv))
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19812020")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19812020_NATIONAL")
 all1981 <- list.files(pattern = ".csv")
 alldata1981 <- do.call(rbind, lapply(all1981, read.csv))
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files_NATIONAL")
 
-write.csv(alldata1921, "trends_in_19212020_water_year_streamflow_metrics_and_climate_data_11102022.csv")
-write.csv(alldata1951, "trends_in_19512020_water_year_streamflow_metrics_and_climate_data_11102022.csv")
-write.csv(alldata1981, "trends_in_19812020_water_year_streamflow_metrics_and_climate_data_11102022.csv")
+write.csv(alldata1921, "trends_in_19212020_water_year_streamflow_metrics_and_climate_data_NATIONAL_042123.csv")
+write.csv(alldata1951, "trends_in_19512020_water_year_streamflow_metrics_and_climate_data_NATIONAL_042123.csv")
+write.csv(alldata1981, "trends_in_19812020_water_year_streamflow_metrics_and_climate_data_NATIONAL_042123.csv")
 
 ###################################################################################
 ###################################################################################
@@ -220,16 +218,16 @@ write.csv(alldata1981, "trends_in_19812020_water_year_streamflow_metrics_and_cli
 ###################################################################################
 ###################################################################################
 ###################################################################################
-
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files")
-sw <- read.csv("seasonal_streamflow_metrics_10102022.csv")
+# 1921-2020
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files_NATIONAL")
+sw <- read.csv("seasonal_streamflow_metrics_NATIONAL_042123.csv")
 sw$gage <- as.character(sw$gage)
 swsites <- unique(sw$gage)
 swsites <- as.character(swsites)
 level = 0.1
 period_length = 100 # less than 10% missing years
 ###################### prepare geoknife ecoregion monthly data
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020_seasonal")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020_seasonal_NATIONAL")
 for(i in seq_along(swsites)){
   # i = 1
   current <- subset(sw, sw$gage == swsites[i])
@@ -341,7 +339,7 @@ for(i in seq_along(swsites)){
   }
   
   results <- rbind(results_winter,results_spring, results_summer, results_fall)
-    write.csv(results, paste(swsites[i],".trend.summary.csv",sep = ""))}
+  write.csv(results, paste(swsites[i],".trend.summary.csv",sep = ""))}
 
 
 ##############################################################################
@@ -349,15 +347,15 @@ for(i in seq_along(swsites)){
 ##############################################################################
 
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files")
-sw <- read.csv("seasonal_streamflow_metrics_10102022.csv")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files_NATIONAL")
+sw <- read.csv("seasonal_streamflow_metrics_NATIONAL_042123.csv")
 sw$gage <- as.character(sw$gage)
 swsites <- unique(sw$gage)
 swsites <- as.character(swsites)
 level = 0.1
 period_length = 70 # less than 10% missing years
 ###################### prepare geoknife ecoregion monthly data
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020_seasonal")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020_seasonal_NATIONAL")
 for(i in seq_along(swsites)){
   # i = 1
   current <- subset(sw, sw$gage == swsites[i])
@@ -475,15 +473,15 @@ for(i in seq_along(swsites)){
 ############################################################################## 1981 2020
 ##############################################################################
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files")
-sw <- read.csv("seasonal_streamflow_metrics_10102022.csv")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files_NATIONAL")
+sw <- read.csv("seasonal_streamflow_metrics_NATIONAL_042123.csv")
 sw$gage <- as.character(sw$gage)
 swsites <- unique(sw$gage)
 swsites <- as.character(swsites)
 level = 0.1
 period_length = 40 # less than 10% missing years
 ###################### prepare geoknife ecoregion monthly data
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19812020_seasonal")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19812020_seasonal_NATIONAL")
 for(i in seq_along(swsites)){
   # i = 1
   current <- subset(sw, sw$gage == swsites[i])
@@ -602,19 +600,20 @@ for(i in seq_along(swsites)){
 ####################################################################################
 ####################################################################################
 # merge individual site trend files
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020_seasonal")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19212020_seasonal_NATIONAL")
 all1921 <- list.files(pattern = ".csv")
 alldata1921 <- do.call(rbind, lapply(all1921, read.csv))
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020_seasonal")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19512020_seasonal_NATIONAL")
 all1951 <- list.files(pattern = ".csv")
 alldata1951 <- do.call(rbind, lapply(all1951, read.csv))
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19812020_seasonal")
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\trends_19812020_seasonal_NATIONAL")
 all1981 <- list.files(pattern = ".csv")
 alldata1981 <- do.call(rbind, lapply(all1981, read.csv))
 
-setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files")
+
+setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\master_files_NATIONAL")
 
 alldata1921$X <- str_replace(alldata1921$X, "1","")
 alldata1921$X <- str_replace(alldata1921$X, "2","")
@@ -628,7 +627,7 @@ alldata1981$X <- str_replace(alldata1981$X, "1","")
 alldata1981$X <- str_replace(alldata1981$X, "2","")
 alldata1981$X <- str_replace(alldata1981$X, "3","")
 
-write.csv(alldata1921, "trends_in_19212020_seasonal_streamflow_metrics_11102022.csv")
-write.csv(alldata1951, "trends_in_19512020_seasonal_streamflow_metrics_11102022.csv")
-write.csv(alldata1981, "trends_in_19812020_seasonal_streamflow_metrics_11102022.csv")
+write.csv(alldata1921, "trends_in_19212020_seasonal_streamflow_metrics_NATIONAL_04212023.csv")
+write.csv(alldata1951, "trends_in_19512020_seasonal_streamflow_metrics_NATIONAL_04212023.csv")
+write.csv(alldata1981, "trends_in_19812020_seasonal_streamflow_metrics_NATIONAL_04212023.csv")
 

@@ -134,13 +134,47 @@ ggplot(data = states)+ geom_polygon(data = states,aes(x = long, y = lat, group =
 
 ############ 
 ############ 
-############ Next steps - (i) calculate rates of change in irrigated ag, crops etc through time 
+############ Next steps - (i) calculate rates of change in water use, irrigated ag, crops etc through time 
 ############ (ii) set thresholds in values of static values and slopes of dynamic values to determine watersheds likely impacted by depletion
 ############ 
 ############ 
 
+gages2withWU$linear_rate_of_change_irrigated_area <- NA
+gages2withWU$linear_rate_of_change_total_water_use <- NA
 
+for(i in 1:9304){
+  # i = 1
+  # columns 270 to 276 are for irrigated area 1950 to 2012
+  current_IA <- as.numeric(gages2withWU[i,270:276])
+  years_IA <- c(1950,1964,1974,1982,1992,2002,2012)
+  # columns 201 to 206 are for total water use 1985 to 2010
+  current_WU <- as.numeric(gages2withWU[i,201:206])
+  years_WU <- c(1985,1990,1995,2000,2005,2010)
+  
+  current_IA[is.na(current_IA)] <- 0
+  current_WU[is.na(current_WU)] <- 0
+  
+  linear_rate_of_change_irrigated_area <- lm(current_IA ~ years_IA)
+  linear_rate_of_change_irrigated_area <- linear_rate_of_change_irrigated_area$coefficients[2]
 
+  linear_rate_of_change_total_water_use <- lm(current_WU ~ years_WU)
+  linear_rate_of_change_total_water_use <- linear_rate_of_change_total_water_use$coefficients[2]
+  
+  gages2withWU$linear_rate_of_change_irrigated_area[i] <- linear_rate_of_change_irrigated_area 
+  gages2withWU$linear_rate_of_change_total_water_use[i] <- linear_rate_of_change_total_water_use 
+  }
+
+# simple plotting of linear_rate_of_change_irrigated_area
+ggplot(data = states)+ geom_polygon(data = states,aes(x = long, y = lat, group = group), fill = NA, color = "black") +
+  theme_void() + 
+  geom_point(data = gages2withWU, aes(x=LNG_GAGE, y=LAT_GAGE, col = linear_rate_of_change_irrigated_area*100*62)) +
+  scale_color_viridis(option = "turbo",  direction = 1, trans = "sqrt")+coord_map("albers", lat0=30, lat1=40)
+
+# simple plotting of linear_rate_of_change_total_water_use
+ggplot(data = states)+ geom_polygon(data = states,aes(x = long, y = lat, group = group), fill = NA, color = "black") +
+  theme_void() + 
+  geom_point(data = gages2withWU, aes(x=LNG_GAGE, y=LAT_GAGE, col = (linear_rate_of_change_total_water_use)*25)) +
+  scale_color_viridis(option = "turbo",  direction = 1, trans = "sqrt")+coord_map("albers", lat0=30, lat1=40)
 
 
 

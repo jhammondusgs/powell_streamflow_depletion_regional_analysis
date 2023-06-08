@@ -4,16 +4,15 @@
 # Code to experiment with anomaly detection (e.g. sites and years with streamflow that plots away from expected relationships with climate)
 # Goals: 
 #  1) Use anomalies from expected relationships between climate and annual or seasonal flow metrics to detect streamflow depletion
-#     1.1) look at residuals through time to identify likely streamflow depletion
+#     1.1) Look at residuals through time to identify likely streamflow depletion
 #  2) Look at trends in flow signatures vs climate signatures
-# To do:
-#  -Determine method for identifying sites/years with anomalous flow vs climate values using annual time series of annual or seasonal flow sigatures
-#  -Use classification based on vulnerability to keep track of false positive (site shows anomaly, but anomaly due to factor other than GW pumping) and false negative (site shows no anomaly, but impacted by pumping)
-#  -Compute % of flow metric vs climate metric combinations that have anomalous values for each site and each time period. Consider focusing on annual, summer and fall streamflow metrics shown by Lapides et al to be sensitive to depletion.
-#  Other ideas:
-#  -Implement change point identification methods
-#  -consider non-linear trends
-#  -Consider rolling trend periods (eg trends for each 30 year period along record) as a way to further analyze the potential occurrence of streamflow depletion once a site is identified as having an anomaly in flow vs climate relations
+#     2.1) Determine method for identifying sites/years with anomalous flow vs climate values using annual time series of annual or seasonal flow signatures
+#     2.2) Use classification based on vulnerability mapping to keep track of false positive and false negative 
+#     2.3) Compute % of flow metric vs climate metric combinations that have anomalous values for each site and each time period. Consider focusing on annual, summer and fall streamflow metrics shown by Lapides et al to be sensitive to depletion.
+#
+#
+# *** Code currently reading in only for regional gages (California, Michigan, Kansas), but can adapt using lines 
+# from code 6 pt 2 to substitute lines that read in data for national sites
 ################################################################################### 
 ################################################################################### 
 ################################################################################### 
@@ -102,17 +101,20 @@ trends1921_wide_seasonal <- merge(trends1921_wide_seasonal, gages, by = "gage", 
 trends1951_wide_seasonal <- merge(trends1951_wide_seasonal, gages, by = "gage", all.x = TRUE)
 trends1981_wide_seasonal <- merge(trends1981_wide_seasonal, gages, by = "gage", all.x = TRUE)
 
+
+
+
+
 ################################################################################### 
 ################################################################################### 
 ################################################################################### 
-# fit curves or linear models to annual flow vs climate data so that annual anomalies 
+# fit non-linear or linear models to annual flow vs climate data so that annual anomalies 
 # can be detected from long-term patterns
 ################################################################################### 
 ################################################################################### 
 ################################################################################### 
 # read in a file of regions
-regions <- read.csv(paste0(base_wd,"GagesII_CA_MI_KS_072722.csv"))
-colnames(regions)[2] <- "STAID"
+regions <- read.csv(paste0(base_wd,"FILE_TBD_XXXXXXXXXXXX.csv"))
 # assign gages to regions. in the absence of a better classification, just using reference vs non-reference currently
 colnames(annual)[17] <- "STAID"
 colnames(seasonal)[1] <- "STAID"
@@ -142,24 +144,39 @@ annual_flow_metrics <- c("annualflowperwateryear",
 # example for KS, annual metrics
 annual_non_impacted_KS <- subset(annual_non_impacted,  annual_non_impacted$Region == "KS")
 
-# fit random forest model to annual flow observations (for each flow metric separately) at non-impacted sites
+# one possibility, fit random forest model to annual flow observations (for each flow metric separately) at non-impacted sites
 # using tidymodels code from Sam Zipper at https://www.hydroshare.org/resource/fe9d240438914634abbfdcfa03bed863/, "RandomForestTrends_03_RunModels.R" 
 
-#C:\Users\jhammond\Desktop\Powell_Streamflow_Depletion_September_2022\Regional_analysis\Sam_code\ZipperEtAl_2021-ERL_IntermittencyTrends_DataCode.7z\ZipperEtAl_2021-ERL_IntermittencyTrends_DataCode.7z\ZipperEtAl_2021-ERL_IntermittencyTrends_Data+Code\code
-#RandomForestTrends_03_RunModels.R
+
+
 
 # run explanatory variables from impacted sites through models generated above
+
+
+
 
 # assess whether residuals for impacted sites tend to be greater and in a different direction than those
 # for non-impacted sites
 
+
+
+
+
+
 # implement methodology to detect type 1 and type 2 errors
+# false positive (type 1 error: site shows anomaly, but anomaly due to factor other than GW pumping)
+# false negative (type 2 error: site shows no anomaly, but impacted by pumping)
 
 
+
+
+
+
+
 ################################################################################### 
 ################################################################################### 
 ################################################################################### 
-# fit linear models to the trend in flow vs the trends in climate variables so that 
+# fit linear or non-linear models to the trend in flow vs the trends in climate variables so that 
 # trend anomalies can be detected from expected trends in climate vs flow relationships 
 ################################################################################### 
 ################################################################################### 
@@ -180,27 +197,60 @@ trends1921_wide_seasonal <- merge(trends1921_wide_seasonal, regions, by = "STAID
 trends1951_wide_seasonal <- merge(trends1951_wide_seasonal, regions, by = "STAID", all.x = TRUE)
 trends1981_wide_seasonal <- merge(trends1981_wide_seasonal, regions, by = "STAID", all.x = TRUE)
 
-# fit model for each region using just non-impacted gages
-# fit a model for each flow and climate metric combination
-
-# example model would be x=tau_wy_p_mm, y=tau_daysbelowlowflowthreshannual
+# fit model for each region using just non-impacted gages?
+# fit a model for each flow and climate metric combination?
 
 
-# run explanatory variables from impacted sites through models generated above
 
-# assess whether residuals for impacted sites tend to be greater and in a different direction than those
-# for non-impacted sites
-
-
-# implement methodology to detect type 1 and type 2 errors
+# example model would be x=tau_wy_p_mm vs y=tau_daysbelowlowflowthreshannual
+# once models fit to likely non-impacted gages, run explanatory variables from 
+# impacted sites through models generated above
 
 
+
+# assess whether residuals for impacted sites tend to be greater and in a different 
+# direction than those for non-impacted sites
+
+
+
+
+# implement methodology to detect type 1 and type 2 errors: 
+# false positive (type 1 error: site shows anomaly, but anomaly due to factor other than GW pumping)
+# false negative (type 2 error: site shows no anomaly, but impacted by pumping)
+
+
+
+
+################################################################################### 
+################################################################################### 
+################################################################################### 
 # make summary table showing the number of annual flow vs climate combination with 
 # depletion anomalies detected for each region
+################################################################################### 
+################################################################################### 
+################################################################################### 
 
 
-# make summary table showing the number of flow trend vs climate trend combination with 
-# depletion anomalies detected for each region
 
 
-#### moving beyond this approach at regional scale, when modeling for any individual site, could look for 20 nearest impacted and 20 nearest non-impacted sites within a search distance of 500 miles (for example)
+
+
+
+
+
+################################################################################### 
+################################################################################### 
+################################################################################### 
+# make summary table showing the number of flow trend vs climate trend combinations with depletion anomalies 
+# detected from expected flow and climate patterns for non-impacted gages in each region
+################################################################################### 
+################################################################################### 
+################################################################################### 
+
+
+
+
+
+
+
+

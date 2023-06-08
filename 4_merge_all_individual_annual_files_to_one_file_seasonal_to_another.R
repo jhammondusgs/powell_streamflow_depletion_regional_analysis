@@ -1,6 +1,4 @@
-
 # code below not updated to run for any user using github and google drive yet
-
 
 setwd("C:\\Users\\jhammond\\Desktop\\Powell_Streamflow_Depletion_September_2022\\Regional_analysis\\streamflow_metrics_with_climate")
 allannual <- list.files(pattern = "annual")
